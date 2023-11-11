@@ -28,7 +28,7 @@ function Room({ ws, setWsState }) {
 					messages: [
 						...prev.messages,
 						{
-							data: data.payload.data,
+							date: data.payload.date,
 							text: data.payload.message,
 						},
 					],
@@ -47,21 +47,25 @@ function Room({ ws, setWsState }) {
 	const onSubmit = (e) => {
 		e.preventDefault()
 
+		const checkTime = (i) => {
+			if (i < 10) {
+				i = '0' + i
+			}
+			return i
+		}
+
 		const today = new Date()
-		const year = today.getFullYear()
-		let m = today.getMonth() + 1 // Months start at 0!
-		let d = today.getDate()
+		const h = checkTime(today.getHours())
+		const m = checkTime(today.getMinutes())
+		const s = checkTime(today.getSeconds())
 
-		if (d < 10) d = '0' + d
-		if (m < 10) m = '0' + m
-
-		const formattedToday = `${d}/${m}/${year}`
+		const formattedToday = `${h}:${m}:${s}`
 
 		const data = {
 			event: 'SEND_MESSAGE',
 			payload: {
 				message: state.message,
-				data: formattedToday,
+				date: formattedToday,
 			},
 		}
 
@@ -92,7 +96,9 @@ function Room({ ws, setWsState }) {
 			</form>
 
 			{state.messages.map((message, idx) => (
-				<div key={idx}>{message.text}</div>
+				<p key={idx}>
+					{message.date} - {message.text}
+				</p>
 			))}
 		</>
 	)
